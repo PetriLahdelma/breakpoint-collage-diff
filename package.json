@@ -38,5 +38,10 @@
   "homepage": "https://github.com/PetriLahdelma/breakpoint-collage-diff#readme",
   "bugs": {
     "url": "https://github.com/PetriLahdelma/breakpoint-collage-diff/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/pixelmatch": "^5.2.4",
+    "@types/pngjs": "^6.0.0"
   }
 }
