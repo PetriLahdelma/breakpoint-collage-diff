@@ -44,8 +44,8 @@ function readUrls(opts: Options): string[] {
     const raw = fs.readFileSync(opts.urlsFile, "utf8");
     return raw
       .split("\n")
-      .map(l => l.trim())
-      .filter(l => l && !l.startsWith("#"));
+      .map((l: string) => l.trim())
+      .filter((l: string) => l && !l.startsWith("#"));
   }
   return [];
 }
