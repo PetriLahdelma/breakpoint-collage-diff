@@ -1,8 +1,10 @@
 # breakpoint-collage-diff
 
-Visual regression as a single collage per page.
+![Hero](assets/hero.png)
 
-Tagline: One collage per URL. No surprises in PRs.
+![CI](https://github.com/PetriLahdelma/breakpoint-collage-diff/actions/workflows/ci.yml/badge.svg) ![Release](https://img.shields.io/github/v/release/PetriLahdelma/breakpoint-collage-diff) ![License](https://img.shields.io/github/license/PetriLahdelma/breakpoint-collage-diff) ![Stars](https://img.shields.io/github/stars/PetriLahdelma/breakpoint-collage-diff)
+
+Collage all breakpoints and catch visual regressions fast.
 
 ## Quickstart
 ```bash
@@ -11,45 +13,18 @@ npx breakpoint-collage-diff --url https://example.com
 
 ## Demo
 ```bash
-breakpoint-collage-diff --url https://example.com --breakpoints 375,768,1280
-```
-Expected output:
-```
-collage written: artifacts/collages/example-com.png
-diff: 0.00%
+breakpoint-collage-diff --urls urls.txt --breakpoints 375,768,1280
 ```
 
-## Screenshots
-Placeholder: add screenshots in `docs/` and link them here.
+## Why This Exists
+Playwright screenshots stitched into a single, reviewable artifact.
 
-## What it does
-- Takes screenshots at multiple breakpoints
-- Stitches them into a single collage per URL
-- Diffs collages against baselines
-- Uploads artifacts in CI and can comment on PRs
+## FAQ
+- **Does it upload artifacts?** Yes, via GitHub Actions.
+- **Can it comment on PRs?** Optional via workflow.
 
-## CLI
-```bash
-breakpoint-collage-diff --url <url> [options]
-```
-Options:
-- `--urls <file>` list of URLs
-- `--breakpoints 375,768,1280`
-- `--outdir artifacts`
-- `--baseline-dir baseline`
-- `--update-baseline`
-- `--max-diff-pct 0.001`
-
-## GitHub Actions
-This repo includes a workflow that uploads collages and diffs as artifacts and can comment on PRs.
-Set `COMMENT_ON_PR=true` to enable comments.
-
-## Manual publish steps (optional)
-```bash
-npm login
-npm publish --access public
-```
-If the name is taken, consider scoped naming like `@petri-lahdelma/breakpoint-collage-diff`.
+## Contributing
+See `CONTRIBUTING.md` for test and render steps.
 
 ## License
 MIT
