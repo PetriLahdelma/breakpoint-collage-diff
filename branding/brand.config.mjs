@@ -5,6 +5,7 @@ export default {
   accent: "#6366F1",
   pills: ["Playwright capture","Collage diff","PR artifacts"],
   demo: ["$ breakpoint-collage-diff --url https://example.com","Captured 4 breakpoints","Collage: artifacts/collages/example.png","Diff: 0.6% (PASS)"],
+  output: ["baseline/example-collage.svg","current/example-collage.svg","diff/example-diff.svg","diff: 0.6% (pass)"],
   callout: "This tool loads URLs in headless Chromium. Run it only against pages you trust.",
   quickstart: "npx breakpoint-collage-diff --url https://example.com",
   hero: { width: 1600, height: 900 },

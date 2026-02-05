@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="980" viewBox="0 0 720 980">
+  <rect width="720" height="980" fill="#F8FAFC"/>
+  <g stroke="#CBD5E1" stroke-width="2" fill="#FFFFFF">
+    <rect x="60" y="40" width="600" height="180" rx="16"/>
+    <rect x="100" y="260" width="520" height="220" rx="16"/>
+    <rect x="140" y="520" width="440" height="240" rx="16"/>
+    <rect x="180" y="800" width="360" height="140" rx="16"/>
+  </g>
+  <g fill="#4F46E5" opacity="0.15">
+    <rect x="80" y="70" width="560" height="12" rx="6"/>
+    <rect x="120" y="300" width="480" height="12" rx="6"/>
+    <rect x="160" y="560" width="400" height="12" rx="6"/>
+    <rect x="200" y="830" width="320" height="12" rx="6"/>
+  </g>
+  <text x="60" y="24" font-family="Arial, sans-serif" font-size="14" fill="#64748B">Breakpoint collage preview</text>
+</svg>
