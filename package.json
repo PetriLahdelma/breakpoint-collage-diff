@@ -19,7 +19,8 @@
     "build": "tsc -p tsconfig.json",
     "dev": "npm run build && node dist/index.js --url https://example.com",
     "lint": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node test/slug.test.js"
+    "test": "npm run build && node test/slug.test.js",
+    "render": "node scripts/render-hero.mjs && node scripts/render-og.mjs && node scripts/render-before-after.mjs && node scripts/render-readme.mjs"
   },
   "dependencies": {
     "playwright": "^1.49.0",
@@ -42,6 +43,7 @@
   "devDependencies": {
     "@types/node": "^20.11.30",
     "@types/pixelmatch": "^5.2.4",
-    "@types/pngjs": "^6.0.0"
+    "@types/pngjs": "^6.0.0",
+    "playwright": "^1.49.0"
   }
 }
