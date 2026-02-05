@@ -1,6 +1,6 @@
 {
   "name": "breakpoint-collage-diff",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Playwright CLI to collage breakpoints and diff against baselines.",
   "type": "module",
   "bin": {
