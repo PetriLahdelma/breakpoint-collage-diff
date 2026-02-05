@@ -8,6 +8,7 @@ export default {
   callout: "This tool loads URLs in headless Chromium. Run it only against pages you trust.",
   quickstart: "npx breakpoint-collage-diff --url https://example.com",
   hero: { width: 1600, height: 900 },
+  heroAccent: "none",
   icon: {
     inner: `
 <rect x="112" y="140" width="240" height="160" rx="24" stroke="{{accent}}" stroke-width="{{stroke}}"/>
