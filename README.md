@@ -44,7 +44,7 @@ npx breakpoint-collage-diff --url https://example.com
 ```
 
 ## Demo
-![Terminal Demo](branding/screenshots/terminal-demo.svg)
+![Demo](branding/demos/demo.gif)
 
 ```bash
 breakpoint-collage-diff --urls urls.txt --breakpoints 375,768,1280
