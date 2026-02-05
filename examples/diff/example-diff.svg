@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="980" viewBox="0 0 720 980">
+  <rect width="720" height="980" fill="#0F172A"/>
+  <g stroke="#F97316" stroke-width="4" fill="none">
+    <rect x="60" y="40" width="600" height="180" rx="16"/>
+    <rect x="100" y="260" width="520" height="220" rx="16"/>
+  </g>
+  <text x="60" y="24" font-family="Arial, sans-serif" font-size="14" fill="#F8FAFC">Diff overlay (example)</text>
+</svg>
