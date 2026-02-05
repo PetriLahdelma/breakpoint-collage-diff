@@ -7,18 +7,6 @@ import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
 import { slugifyUrl } from "./lib/slug.js";
 
-type Options = {
-  url?: string;
-  urlsFile?: string;
-  breakpoints: number[];
-  outdir: string;
-  baselineDir: string;
-  updateBaseline: boolean;
-  maxDiffPct: number;
-  help: boolean;
-  timeoutMs: number;
-};
-
 const HELP_TEXT = `
 breakpoint-collage-diff
 Capture breakpoint collages and diff against baselines.
@@ -49,15 +37,15 @@ function printHelp() {
   console.log(HELP_TEXT);
 }
 
-function parseArgs(argv: string[]): Options {
-  const opts: Options = {
+function parseArgs(argv) {
+  const opts = {
     breakpoints: [375, 768, 1024, 1440],
     outdir: "artifacts",
     baselineDir: "baseline",
     updateBaseline: false,
     maxDiffPct: 0,
     help: false,
-    timeoutMs: 30_000
+    timeoutMs: 30000
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -126,7 +114,7 @@ function parseArgs(argv: string[]): Options {
   return opts;
 }
 
-function readUrls(opts: Options): string[] {
+function readUrls(opts) {
   if (opts.url && opts.urlsFile) {
     throw new Error("Use --url or --urls, not both");
   }
@@ -138,13 +126,13 @@ function readUrls(opts: Options): string[] {
     const raw = fs.readFileSync(opts.urlsFile, "utf8");
     return raw
       .split("\n")
-      .map((l: string) => l.trim())
-      .filter((l: string) => l && !l.startsWith("#"));
+      .map(l => l.trim())
+      .filter(l => l && !l.startsWith("#"));
   }
   return [];
 }
 
-async function makeCollage(images: string[], outPath: string) {
+async function makeCollage(images, outPath) {
   const metas = await Promise.all(images.map(p => sharp(p).metadata()));
   const width = Math.max(...metas.map(m => m.width || 0));
   const height = metas.reduce((sum, m) => sum + (m.height || 0), 0);
@@ -165,11 +153,11 @@ async function makeCollage(images: string[], outPath: string) {
     .toFile(outPath);
 }
 
-function ensureDir(p: string) {
+function ensureDir(p) {
   fs.mkdirSync(p, { recursive: true });
 }
 
-function diffImages(currentPath: string, baselinePath: string, diffPath: string) {
+function diffImages(currentPath, baselinePath, diffPath) {
   const img1 = PNG.sync.read(fs.readFileSync(baselinePath));
   const img2 = PNG.sync.read(fs.readFileSync(currentPath));
   if (img1.width !== img2.width || img1.height !== img2.height) {
@@ -183,7 +171,7 @@ function diffImages(currentPath: string, baselinePath: string, diffPath: string)
 }
 
 async function main() {
-  let opts: Options;
+  let opts;
   try {
     opts = parseArgs(process.argv.slice(2));
   } catch (err) {
@@ -204,7 +192,7 @@ async function main() {
     return;
   }
 
-  let urls: string[];
+  let urls;
   try {
     urls = readUrls(opts);
   } catch (err) {
@@ -230,7 +218,7 @@ async function main() {
   try {
     for (const url of urls) {
       const slug = slugifyUrl(url);
-      const shots: string[] = [];
+      const shots = [];
 
       for (const bp of opts.breakpoints) {
         const page = await browser.newPage({ viewport: { width: bp, height: 900 } });
