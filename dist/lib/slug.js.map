@@ -1,0 +1,1 @@
+{"version":3,"file":"slug.js","sourceRoot":"","sources":["../../src/lib/slug.ts"],"names":[],"mappings":"AAAA,MAAM,UAAU,UAAU,CAAC,GAAW;IACpC,OAAO,GAAG;SACP,OAAO,CAAC,cAAc,EAAE,EAAE,CAAC;SAC3B,OAAO,CAAC,gBAAgB,EAAE,GAAG,CAAC;SAC9B,OAAO,CAAC,UAAU,EAAE,EAAE,CAAC;SACvB,WAAW,EAAE,CAAC;AACnB,CAAC"}

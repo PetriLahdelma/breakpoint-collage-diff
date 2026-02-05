@@ -15,7 +15,39 @@ type Options = {
   baselineDir: string;
   updateBaseline: boolean;
   maxDiffPct: number;
+  help: boolean;
+  timeoutMs: number;
 };
+
+const HELP_TEXT = `
+breakpoint-collage-diff
+Capture breakpoint collages and diff against baselines.
+
+Usage:
+  breakpoint-collage-diff --url https://example.com
+  breakpoint-collage-diff --urls urls.txt --breakpoints 375,768,1280
+  breakpoint-collage-diff --url https://example.com --update-baseline
+
+Options:
+  --url <url>               Single URL to capture
+  --urls <file>             Text file with URLs (one per line)
+  --breakpoints <list>      Comma-separated widths (default: 375,768,1024,1440)
+  --outdir <dir>            Output directory (default: artifacts)
+  --baseline-dir <dir>      Baseline collage directory (default: baseline)
+  --update-baseline         Overwrite baselines with new collages
+  --max-diff-pct <n>         Allowed diff ratio (0-1) or percent (0-100)
+  --timeout-ms <n>          Page navigation timeout in ms (default: 30000)
+  -h, --help                Show help
+
+Exit codes:
+  0 success
+  1 runtime/config error
+  2 diff exceeded max threshold
+`.trim();
+
+function printHelp() {
+  console.log(HELP_TEXT);
+}
 
 function parseArgs(argv: string[]): Options {
   const opts: Options = {
@@ -23,24 +55,86 @@ function parseArgs(argv: string[]): Options {
     outdir: "artifacts",
     baselineDir: "baseline",
     updateBaseline: false,
-    maxDiffPct: 0
+    maxDiffPct: 0,
+    help: false,
+    timeoutMs: 30_000
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === "--url") opts.url = argv[++i];
-    else if (a === "--urls") opts.urlsFile = argv[++i];
-    else if (a === "--breakpoints") opts.breakpoints = (argv[++i] || "").split(",").map(n => Number(n.trim())).filter(Boolean);
-    else if (a === "--outdir") opts.outdir = argv[++i] || opts.outdir;
-    else if (a === "--baseline-dir") opts.baselineDir = argv[++i] || opts.baselineDir;
-    else if (a === "--update-baseline") opts.updateBaseline = true;
-    else if (a === "--max-diff-pct") opts.maxDiffPct = Number(argv[++i] || 0);
+    if (a === "--help" || a === "-h") {
+      opts.help = true;
+      continue;
+    }
+    if (a === "--url") {
+      const value = argv[++i];
+      if (!value) throw new Error("Missing value for --url");
+      opts.url = value;
+      continue;
+    }
+    if (a === "--urls") {
+      const value = argv[++i];
+      if (!value) throw new Error("Missing value for --urls");
+      opts.urlsFile = value;
+      continue;
+    }
+    if (a === "--breakpoints") {
+      const value = argv[++i];
+      if (!value) throw new Error("Missing value for --breakpoints");
+      opts.breakpoints = value
+        .split(",")
+        .map(n => Number(n.trim()))
+        .filter(n => Number.isFinite(n) && n > 0);
+      continue;
+    }
+    if (a === "--outdir") {
+      const value = argv[++i];
+      if (!value) throw new Error("Missing value for --outdir");
+      opts.outdir = value;
+      continue;
+    }
+    if (a === "--baseline-dir") {
+      const value = argv[++i];
+      if (!value) throw new Error("Missing value for --baseline-dir");
+      opts.baselineDir = value;
+      continue;
+    }
+    if (a === "--update-baseline") {
+      opts.updateBaseline = true;
+      continue;
+    }
+    if (a === "--max-diff-pct") {
+      const value = argv[++i];
+      if (!value) throw new Error("Missing value for --max-diff-pct");
+      const num = Number(value);
+      if (!Number.isFinite(num) || num < 0) throw new Error("max-diff-pct must be a number >= 0");
+      opts.maxDiffPct = num > 1 ? num / 100 : num;
+      if (opts.maxDiffPct > 1) throw new Error("max-diff-pct must be <= 100");
+      continue;
+    }
+    if (a === "--timeout-ms") {
+      const value = argv[++i];
+      if (!value) throw new Error("Missing value for --timeout-ms");
+      const num = Number(value);
+      if (!Number.isFinite(num) || num <= 0) throw new Error("timeout-ms must be a number > 0");
+      opts.timeoutMs = num;
+      continue;
+    }
+    if (a.startsWith("-")) {
+      throw new Error(`Unknown option: ${a}`);
+    }
   }
   return opts;
 }
 
 function readUrls(opts: Options): string[] {
+  if (opts.url && opts.urlsFile) {
+    throw new Error("Use --url or --urls, not both");
+  }
   if (opts.url) return [opts.url];
   if (opts.urlsFile) {
+    if (!fs.existsSync(opts.urlsFile)) {
+      throw new Error(`URLs file not found: ${opts.urlsFile}`);
+    }
     const raw = fs.readFileSync(opts.urlsFile, "utf8");
     return raw
       .split("\n")
@@ -89,11 +183,39 @@ function diffImages(currentPath: string, baselinePath: string, diffPath: string)
 }
 
 async function main() {
-  const opts = parseArgs(process.argv.slice(2));
-  const urls = readUrls(opts);
+  let opts: Options;
+  try {
+    opts = parseArgs(process.argv.slice(2));
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : err);
+    printHelp();
+    process.exit(1);
+    return;
+  }
+
+  if (opts.help) {
+    printHelp();
+    return;
+  }
+
+  if (opts.breakpoints.length === 0) {
+    console.error("Provide at least one breakpoint via --breakpoints");
+    process.exit(1);
+    return;
+  }
+
+  let urls: string[];
+  try {
+    urls = readUrls(opts);
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : err);
+    process.exit(1);
+    return;
+  }
   if (urls.length === 0) {
     console.error("Provide --url or --urls <file>");
     process.exit(1);
+    return;
   }
 
   const outCollages = path.join(opts.outdir, "collages");
@@ -105,39 +227,42 @@ async function main() {
   const browser = await chromium.launch();
   let failed = false;
 
-  for (const url of urls) {
-    const slug = slugifyUrl(url);
-    const shots: string[] = [];
+  try {
+    for (const url of urls) {
+      const slug = slugifyUrl(url);
+      const shots: string[] = [];
 
-    for (const bp of opts.breakpoints) {
-      const page = await browser.newPage({ viewport: { width: bp, height: 900 } });
-      await page.goto(url, { waitUntil: "networkidle" });
-      const shotPath = path.join(opts.outdir, `${slug}-${bp}.png`);
-      await page.screenshot({ path: shotPath, fullPage: true });
-      await page.close();
-      shots.push(shotPath);
+      for (const bp of opts.breakpoints) {
+        const page = await browser.newPage({ viewport: { width: bp, height: 900 } });
+        await page.goto(url, { waitUntil: "networkidle", timeout: opts.timeoutMs });
+        const shotPath = path.join(opts.outdir, `${slug}-${bp}.png`);
+        await page.screenshot({ path: shotPath, fullPage: true });
+        await page.close();
+        shots.push(shotPath);
+      }
+
+      const collagePath = path.join(outCollages, `${slug}.png`);
+      await makeCollage(shots, collagePath);
+      console.log(`collage written: ${collagePath}`);
+
+      const baselinePath = path.join(opts.baselineDir, `${slug}.png`);
+      if (opts.updateBaseline || !fs.existsSync(baselinePath)) {
+        fs.copyFileSync(collagePath, baselinePath);
+        console.log(`baseline updated: ${baselinePath}`);
+        continue;
+      }
+
+      const diffPath = path.join(outDiffs, `${slug}.png`);
+      const { diffPct, sizeMismatch } = diffImages(collagePath, baselinePath, diffPath);
+      console.log(`diff: ${(diffPct * 100).toFixed(2)}%`);
+      if (sizeMismatch || diffPct > opts.maxDiffPct) {
+        failed = true;
+      }
     }
-
-    const collagePath = path.join(outCollages, `${slug}.png`);
-    await makeCollage(shots, collagePath);
-    console.log(`collage written: ${collagePath}`);
-
-    const baselinePath = path.join(opts.baselineDir, `${slug}.png`);
-    if (opts.updateBaseline || !fs.existsSync(baselinePath)) {
-      fs.copyFileSync(collagePath, baselinePath);
-      console.log(`baseline updated: ${baselinePath}`);
-      continue;
-    }
-
-    const diffPath = path.join(outDiffs, `${slug}.png`);
-    const { diffPct, sizeMismatch } = diffImages(collagePath, baselinePath, diffPath);
-    console.log(`diff: ${(diffPct * 100).toFixed(2)}%`);
-    if (sizeMismatch || diffPct > opts.maxDiffPct) {
-      failed = true;
-    }
+  } finally {
+    await browser.close();
   }
 
-  await browser.close();
   if (failed) process.exit(2);
 }
 

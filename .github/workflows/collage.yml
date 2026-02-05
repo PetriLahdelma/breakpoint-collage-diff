@@ -6,6 +6,9 @@ on:
 jobs:
   collage:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       COMMENT_ON_PR: "false"
     steps:
@@ -13,7 +16,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
+          cache: npm
+      - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: node dist/index.js --urls urls.txt --max-diff-pct 0
