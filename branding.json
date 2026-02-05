@@ -1,0 +1,60 @@
+{
+  "name": "breakpoint-collage-diff",
+  "tagline": "Collage all breakpoints and catch visual regressions fast.",
+  "accent": [
+    "#8b5cf6",
+    "#06b6d4"
+  ],
+  "logo": "assets/logo.svg",
+  "badges": [
+    {
+      "label": "version",
+      "value": "v0.1.0"
+    },
+    {
+      "label": "license",
+      "value": "MIT"
+    },
+    {
+      "label": "ci",
+      "value": "passing"
+    },
+    {
+      "label": "stars",
+      "value": "github"
+    }
+  ],
+  "badgesMd": [
+    {
+      "label": "CI",
+      "url": "https://github.com/PetriLahdelma/breakpoint-collage-diff/actions/workflows/ci.yml/badge.svg"
+    },
+    {
+      "label": "Release",
+      "url": "https://img.shields.io/github/v/release/PetriLahdelma/breakpoint-collage-diff"
+    },
+    {
+      "label": "License",
+      "url": "https://img.shields.io/github/license/PetriLahdelma/breakpoint-collage-diff"
+    },
+    {
+      "label": "Stars",
+      "url": "https://img.shields.io/github/stars/PetriLahdelma/breakpoint-collage-diff"
+    }
+  ],
+  "proof": "Proof: one collage per page, diffed in CI.",
+  "beforeAfter": {
+    "before": "Visual regressions slip through",
+    "after": "Baseline collages in PRs"
+  },
+  "quickstart": "```bash\nnpx breakpoint-collage-diff --url https://example.com\n```",
+  "demo": "```bash\nbreakpoint-collage-diff --urls urls.txt --breakpoints 375,768,1280\n```",
+  "why": "Playwright screenshots stitched into a single, reviewable artifact.",
+  "faq": "- **Does it upload artifacts?** Yes, via GitHub Actions.\n- **Can it comment on PRs?** Optional via workflow.",
+  "contributing": "See `CONTRIBUTING.md` for test and render steps.",
+  "license": "MIT",
+  "hero": {
+    "width": 1600,
+    "height": 900
+  }
+}
