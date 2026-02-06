@@ -2,6 +2,14 @@
   "name": "breakpoint-collage-diff",
   "version": "0.1.1",
   "description": "Playwright CLI to collage breakpoints and diff against baselines.",
+  "keywords": [
+    "visual-regression",
+    "playwright",
+    "screenshots",
+    "ci",
+    "frontend",
+    "cli"
+  ],
   "type": "module",
   "bin": {
     "breakpoint-collage-diff": "dist/index.js"
