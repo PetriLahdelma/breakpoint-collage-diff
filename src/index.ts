@@ -5,6 +5,7 @@ import { chromium } from "playwright";
 import sharp from "sharp";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
+import { normalizeBreakpoints, normalizeUrls } from "./lib/options.js";
 import { slugifyUrl } from "./lib/slug.js";
 
 type Options = {
@@ -80,10 +81,7 @@ function parseArgs(argv: string[]): Options {
     if (a === "--breakpoints") {
       const value = argv[++i];
       if (!value) throw new Error("Missing value for --breakpoints");
-      opts.breakpoints = value
-        .split(",")
-        .map(n => Number(n.trim()))
-        .filter(n => Number.isFinite(n) && n > 0);
+      opts.breakpoints = normalizeBreakpoints(value);
       continue;
     }
     if (a === "--outdir") {
@@ -130,16 +128,18 @@ function readUrls(opts: Options): string[] {
   if (opts.url && opts.urlsFile) {
     throw new Error("Use --url or --urls, not both");
   }
-  if (opts.url) return [opts.url];
+  if (opts.url) return normalizeUrls([opts.url]);
   if (opts.urlsFile) {
     if (!fs.existsSync(opts.urlsFile)) {
       throw new Error(`URLs file not found: ${opts.urlsFile}`);
     }
     const raw = fs.readFileSync(opts.urlsFile, "utf8");
-    return raw
-      .split("\n")
-      .map((l: string) => l.trim())
-      .filter((l: string) => l && !l.startsWith("#"));
+    return normalizeUrls(
+      raw
+        .split("\n")
+        .map((l: string) => l.trim())
+        .filter((l: string) => l && !l.startsWith("#"))
+    );
   }
   return [];
 }
