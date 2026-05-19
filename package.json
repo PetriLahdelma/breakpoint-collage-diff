@@ -30,7 +30,7 @@
     "build": "tsc -p tsconfig.json",
     "dev": "npm run build && node dist/index.js --url https://example.com",
     "lint": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node test/slug.test.js",
+    "test": "npm run build && node test/slug.test.js && node test/options.test.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "render": "node scripts/render-hero.mjs && node scripts/render-og.mjs && node scripts/render-before-after.mjs && node scripts/render-readme.mjs",
     "brand:build": "node scripts/brand-build.mjs",

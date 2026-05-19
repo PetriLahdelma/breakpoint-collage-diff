@@ -5,6 +5,7 @@ import { chromium } from "playwright";
 import sharp from "sharp";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
+import { normalizeBreakpoints, normalizeUrls } from "./lib/options.js";
 import { slugifyUrl } from "./lib/slug.js";
 const HELP_TEXT = `
 breakpoint-collage-diff
@@ -68,10 +69,7 @@ function parseArgs(argv) {
             const value = argv[++i];
             if (!value)
                 throw new Error("Missing value for --breakpoints");
-            opts.breakpoints = value
-                .split(",")
-                .map(n => Number(n.trim()))
-                .filter(n => Number.isFinite(n) && n > 0);
+            opts.breakpoints = normalizeBreakpoints(value);
             continue;
         }
         if (a === "--outdir") {
@@ -125,16 +123,16 @@ function readUrls(opts) {
         throw new Error("Use --url or --urls, not both");
     }
     if (opts.url)
-        return [opts.url];
+        return normalizeUrls([opts.url]);
     if (opts.urlsFile) {
         if (!fs.existsSync(opts.urlsFile)) {
             throw new Error(`URLs file not found: ${opts.urlsFile}`);
         }
         const raw = fs.readFileSync(opts.urlsFile, "utf8");
-        return raw
+        return normalizeUrls(raw
             .split("\n")
             .map((l) => l.trim())
-            .filter((l) => l && !l.startsWith("#"));
+            .filter((l) => l && !l.startsWith("#")));
     }
     return [];
 }
